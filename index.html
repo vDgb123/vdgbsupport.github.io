@@ -1,397 +1,246 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe 2 Player</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gia Bao Space - Tic Tac Toe Mobile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #9933ff;
+            --secondary: #00ffff;
+            --accent: #ff00ff;
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            font-family: 'Courier', monospace;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            /* Ảnh nền được giả định có tên là 'background.jpg' */
-            background-image: url(background.jpg);
-            background-size: cover;
-            backdrop-filter: brightness(0.8);
-            position: relative;
-            overflow-x: hidden; 
+            color: #fff;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: -1;
         }
 
         .main-content {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: grid;
+            grid-template-columns: 320px 420px 320px;
+            gap: 25px;
             width: 100%;
-            flex-direction: row; 
-            flex-wrap: wrap; 
+            max-width: 1200px;
+            align-items: start;
+        }
+
+        .card-glass {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .music-player {
-            width: 350px; 
-            height: 565px; 
-            background: linear-gradient(to top, #f2e6ff,#cc99ff, #b366ff, #9933ff); 
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            color: white;
-            text-align: center;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            position: static; 
-            margin: 20px 50px 20px 0; 
-            z-index: 10;
-            transition: 0.3s;
-        }
-        .music-player:hover {
-            transform: scale(1.025);
-            transition: 0.3s;
+            gap: 15px;
         }
 
         .music-player h2 {
-            margin-top: 0;
-            font-size: 1.5em;
-            color: #fff;
+            font-size: 1.4rem;
+            text-align: center;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
+
         #currentSong {
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            background: rgba(0,0,0,0.4);
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            text-align: center;
+            border-bottom: 2px solid var(--secondary);
         }
 
         .music-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .music-controls:hover {
-            transform: scale(1.015);
-        }
-        .music-controls button {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background: linear-gradient(to top, #ff80ff, #ffb3ff);
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s ease;
-            box-shadow: 6px 6px 12px #9a66cc, -6px -6px 12px #cc99ff;
-        }
-        .music-controls button:hover {
-            background-color: ##cc00ff;
-            box-shadow: inset 3px 3px 6px #800080, inset -3px -3px 6px #ffb3ff;
-            transform: scale(0.98);
-        }
-        .music-controls button:active {
-            box-shadow: inset 5px 5px 10px #660066, inset -5px -5px 10px #ffccff;
-            transform: scale(0.95);
-        }
-
-        .skip-controls {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
             gap: 10px;
         }
 
-        .skip-controls button {
-            flex-grow: 1;
-        }
-
-        #volumeControl {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            outline: none;
-            transition: opacity .2s;
-            margin-top: 10px;
-            box-shadow: inset 2px 2px 5px #7a52a3, inset -2px -2px 5px #d4bfff;
-        }
-
-        #volumeControl:hover {
-            opacity: 1;
-        }
-
-        #volumeControl::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%; 
-            background: linear-gradient(to right, #00ffff, #00bfff, #007fff);
-            cursor: pointer;
-            box-shadow: 4px 4px 8px #005f7f, -4px -4px 8px #00ffff;
-            transition: all 0.2s ease;
-        }
-        #volumeControl::-webkit-slider-thumb:active {
-            box-shadow: inset 2px 2px 4px #005f7f, inset -2px -2px 4px #00ffff;
-        }
-
-        #volumeControl::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(to right, #00ffff, #00bfff, #007fff);
-            cursor: pointer;
-            box-shadow: 4px 4px 8px #005f7f, -4px -4px 8px #00ffff;
+        .btn-music {
+            padding: 12px;
             border: none;
-            transition: all 0.2s ease;
-        }
-        #volumeControl::-moz-range-thumb:active {
-            box-shadow: inset 2px 2px 4px #005f7f, inset -2px -2px 4px #00ffff;
-        }
-
-        #volumeControl::-moz-range-progress {
-            background: linear-gradient(to right, #00ffff, #00bfff);
-            border-radius: 5px;
-        }
-        
-        .image-scroller {
-            width: 350px;
-            height: 565px; 
-            background: linear-gradient(to bottom, #ffcccc, #ff9999, #ff6666);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            color: white;
-            text-align: center;
-            position: static; 
-            margin: 20px 0 20px 50px; 
-            z-index: 10;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .image-scroller:hover {
-            transform: scale(1.025);
-            transition: 0.3s;
-        }
-
-        .image-scroller h2 {
-            margin-top: 0;
-            font-size: 1.5em;
+            border-radius: 12px;
+            background: var(--glass);
             color: #fff;
-            margin-bottom: 10px;
-            flex-shrink: 0;
-        }
-        
-        .scroll-wrapper {
-            flex-grow: 1;
-            overflow-y: hidden; 
-            overflow-x: visible;
-            z-index: 1; 
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        
-        .scroll-wrapper::-webkit-scrollbar {
-            display: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid var(--glass-border);
         }
 
-        .scroll-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            animation: scroll-vertical 15s linear infinite;
-            overflow: visible; 
-        }
-        
-        .image-scroller:hover .scroll-container {
-            animation-play-state: running; 
-        }
+        .btn-play { background: linear-gradient(45deg, var(--primary), var(--accent)); }
 
-        .scroll-item {
-            min-height: 113px;
-            width: 100%;
-            background-size: cover;
-            background-position: center;
-            margin-bottom: 5px; 
-            border-radius: 8px;
-            flex-shrink: 0; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-            transition: transform 0.2s ease-out; 
-            position: relative; 
-            z-index: 2; 
-        }
-        
-        .scroll-item:hover {
-            transform: scale(1.08); 
-            transform-origin: center center;
-            z-index: 100; 
-        }
-        
-        .scroll-item:nth-child(1) { background-image: url('image1.jpg'); }
-        .scroll-item:nth-child(2) { background-image: url('image2.jpg'); }
-        .scroll-item:nth-child(3) { background-image: url('image3.jpg'); }
-        .scroll-item:nth-child(4) { background-image: url('image4.jpg'); }
-        .scroll-item:nth-child(5) { background-image: url('image5.jpg'); }
-        .scroll-item:nth-child(6) { background-image: url('image1.jpg'); }
-        .scroll-item:nth-child(7) { background-image: url('image2.jpg'); }
-        .scroll-item:nth-child(8) { background-image: url('image3.jpg'); }
-        .scroll-item:nth-child(9) { background-image: url('image4.jpg'); }
-        .scroll-item:nth-child(10) { background-image: url('image5.jpg'); }
-
-
-        @keyframes scroll-vertical {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-590px); }
-        }
-
-        .container {
-            width: 380px; 
+        .game-container {
             text-align: center;
-            background: linear-gradient(to top, pink, aqua);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            transition: 0.3s;
-            backdrop-filter: blur(15px);
-            position: relative;
-            z-index: 5;
-            margin: 20px; 
-        }
-        .container:hover {
-            transition: 0.3s;
-            transform: scale(1.025);
         }
 
         #status {
+            font-size: 1.2rem;
             margin-bottom: 20px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #333;
+            font-weight: 800;
+            text-transform: uppercase;
         }
 
         .game-grid {
             display: grid;
-            grid-template-columns: repeat(3, 120px);
-            grid-template-rows: repeat(3, 120px);
-            gap: 5px;
-            margin: 0 auto 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
         }
 
         .cell {
-            background-color: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            aspect-ratio: 1/1;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 3em;
-            font-weight: bold;
+            font-size: 3rem;
+            font-weight: 800;
             cursor: pointer;
-            border-radius: 20px;
-            transition: background-color 0.2s;
+            transition: 0.2s;
+            border: 1px solid var(--glass-border);
         }
 
-        .cell:hover {
-            background-color: rgba(255, 255, 255, 0.7);
-            transform: scale(1.025);
-        }
-
-        .cell.X {
-            color: #e74c3c;
-        }
-
-        .cell.O {
-            color: #3498db;
-        }
+        .cell:active { transform: scale(0.9); }
+        .cell.X { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
+        .cell.O { color: var(--secondary); text-shadow: 0 0 15px var(--secondary); }
 
         #restart-button {
-            padding: 10px 20px;
-            font-size: 1em;
-            font-family: 'Courier', monospace;
-            cursor: pointer;
-            background-color: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(10px);
-            color: white;
+            width: 100%;
+            padding: 14px;
+            border-radius: 15px;
             border: none;
-            border-radius: 10px;
-            transition: background-color 0.3s;
+            background: #fff;
+            color: #000;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        #restart-button:hover {
-            background-color: #ff99ff;
-            font-size: 1.25em;
-            font-weight: 700;
+        .image-scroller {
+            height: 500px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Responsive Design for Mobile Devices */
-        @media (max-width: 1200px) {
+        .scroll-wrapper {
+            flex: 1;
+            overflow: hidden;
+            border-radius: 15px;
+            margin-top: 10px;
+        }
+
+        .scroll-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            animation: scroll-v 15s linear infinite;
+        }
+
+        @keyframes scroll-v {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+
+        .scroll-item {
+            height: 100px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+        }
+
+        .scroll-item:nth-child(1), .scroll-item:nth-child(6) { background-image: url('image1.jpg'); }
+        .scroll-item:nth-child(2), .scroll-item:nth-child(7) { background-image: url('image2.jpg'); }
+        .scroll-item:nth-child(3), .scroll-item:nth-child(8) { background-image: url('image3.jpg'); }
+        .scroll-item:nth-child(4), .scroll-item:nth-child(9) { background-image: url('image4.jpg'); }
+        .scroll-item:nth-child(5), .scroll-item:nth-child(10) { background-image: url('image5.jpg'); }
+
+        @media (max-width: 1100px) {
             .main-content {
-                flex-direction: column;
-                padding: 20px 0;
+                grid-template-columns: 1fr;
+                max-width: 450px;
+                padding-bottom: 50px;
             }
+            
+            .image-scroller { height: 350px; }
+            
+            .music-player { order: 2; }
+            .game-container { order: 1; }
+            .image-scroller { order: 3; }
 
-            .music-player, .image-scroller {
-                position: static; 
-                margin: 20px auto; 
-                width: 90%; 
-                max-width: 380px;
-                height: auto; 
-            }
+            .cell { font-size: 2.5rem; }
+        }
 
-            .container {
-                margin: 20px auto;
-                width: 90%; 
-                max-width: 380px;
-            }
-
-            .game-grid {
-                grid-template-columns: repeat(3, minmax(80px, 1fr)); 
-                grid-template-rows: repeat(3, minmax(80px, 1fr));
-                gap: 5px;
-            }
-
-            .cell {
-                font-size: 2.5em; 
-            }
-
-            .music-player {
-                order: 1; 
-            }
-            .container {
-                order: 2; 
-            }
-            .image-scroller {
-                order: 3; 
-            }
+        @media (max-width: 400px) {
+            padding: 10px;
+            .card-glass { padding: 15px; }
+            .cell { border-radius: 10px; }
         }
     </style>
 </head>
 <body>
+
     <div class="main-content">
-        <div class="music-player">
-            <h2>Music Zones</h2>
-            <p id="currentSong">🎵 Now Playing: Senorita</p>
-            <div class="album-art"></div>
+        <div class="card-glass music-player">
+            <h2>Music Space</h2>
+            <p id="currentSong">🎵 Chọn bài hát...</p>
             <div class="music-controls">
-                <div class="skip-controls">
-                    <button id="prevMusic">⏮ Previous</button>
-                    <button id="nextMusic">Next ⏭</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-music" id="prevMusic" style="flex:1">PREV</button>
+                    <button class="btn-music" id="nextMusic" style="flex:1">NEXT</button>
                 </div>
-                <button id="playMusic">▶ Play</button>
-                <button id="pauseMusic">⏸ Pause</button>
+                <button class="btn-music btn-play" id="playMusic">PLAY</button>
+                <button class="btn-music" id="pauseMusic">PAUSE</button>
                 <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.5">
             </div>
-            <audio id="backgroundMusic" src="senorita.mp3" loop preload="auto"></audio>
+            <audio id="backgroundMusic" loop></audio>
         </div>
 
-        <div class="container">
-            <h1>(Tic-Tac-Toe)</h1>
-            
+        <div class="card-glass game-container">
+            <h1 style="font-size: 1.5rem; margin-bottom: 15px;">TIC TAC TOE</h1>
             <div id="status">X's Turn</div>
-
-            <div class="game-grid">
+            <div class="game-grid" id="grid">
                 <div class="cell" data-index="0"></div>
                 <div class="cell" data-index="1"></div>
                 <div class="cell" data-index="2"></div>
@@ -402,14 +251,13 @@
                 <div class="cell" data-index="7"></div>
                 <div class="cell" data-index="8"></div>
             </div>
-
-            <button id="restart-button">Restart</button>
-            <audio id="vineBoomSound" src="vineboom.mp3" preload="auto"></audio>
-            <audio id="fartSound" src="fart.mp3" preload="auto"></audio>
+            <button id="restart-button">Reset Arena</button>
+            <audio id="vineBoomSound" src="vineboom.mp3"></audio>
+            <audio id="fartSound" src="fart.mp3"></audio>
         </div>
-        
-        <div class="image-scroller">
-            <h2>Ảnh Động</h2>
+
+        <div class="card-glass image-scroller">
+            <h2 style="text-align: center; font-size: 1.2rem;">Gallery</h2>
             <div class="scroll-wrapper">
                 <div class="scroll-container">
                     <div class="scroll-item"></div>
@@ -426,121 +274,8 @@
             </div>
         </div>
     </div>
+
     <script>
-        // Game Logic
-        let gameActive = true;
-        let currentPlayer = "X";
-        let gameState = ["", "", "", "", "", "", "", "", ""];
-
-        const winningConditions = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6]
-        ];
-
-        const statusDisplay = document.querySelector('#status');
-        const cells = document.querySelectorAll('.cell');
-        const restartButton = document.querySelector('#restart-button');
-        const vineBoomSound = document.querySelector('#vineBoomSound');
-        const fartSound = document.querySelector('#fartSound');
-        
-        const handleCellPlayed = (clickedCell, clickedCellIndex) => {
-            gameState[clickedCellIndex] = currentPlayer;
-            clickedCell.innerHTML = currentPlayer;
-            clickedCell.classList.add(currentPlayer);
-        };
-
-        const handlePlayerChange = () => {
-            currentPlayer = currentPlayer === "X" ? "O" : "X";
-            statusDisplay.innerHTML = `Player's ${currentPlayer}`;
-        };
-
-        const handleResultValidation = () => {
-            let roundWon = false;
-            for (let i = 0; i < winningConditions.length; i++) {
-                const winCondition = winningConditions[i];
-                
-                let a = gameState[winCondition[0]];
-                let b = gameState[winCondition[1]];
-                let c = gameState[winCondition[2]];
-
-                if (a === '' || b === '' || c === '') {
-                    continue;
-                }
-
-                if (a === b && b === c) {
-                    roundWon = true;
-                    break;
-                }
-            }
-
-            if (roundWon) {
-                statusDisplay.innerHTML = `Player's ${currentPlayer} Won 🏆`;
-                gameActive = false;
-                
-                vineBoomSound.currentTime = 0;
-                vineBoomSound.play().catch(error => {
-                    console.error("SoundError:", error);
-                });
-                
-                return;
-            }
-
-            let roundDraw = !gameState.includes("");
-            if (roundDraw) {
-                statusDisplay.innerHTML = `Games Tie 🤝`;
-                gameActive = false;
-                
-                fartSound.currentTime = 0;
-                fartSound.play().catch(error => {
-                    console.error("Lỗi phát âm thanh:", error);
-                });
-                
-                return;
-            }
-
-            handlePlayerChange();
-        };
-
-        const handleCellClick = (event) => {
-            const clickedCell = event.target;
-            const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
-
-            if (gameState[clickedCellIndex] !== "" || !gameActive) {
-                return;
-            }
-
-            handleCellPlayed(clickedCell, clickedCellIndex);
-            handleResultValidation();
-        };
-
-        const handleRestartGame = () => {
-            gameActive = true;
-            currentPlayer = "X";
-            gameState = ["", "", "", "", "", "", "", "", ""];
-            
-            vineBoomSound.pause();
-            vineBoomSound.currentTime = 0;
-            fartSound.pause();
-            fartSound.currentTime = 0;
-            
-            statusDisplay.innerHTML = "Player's X Turn";
-            cells.forEach(cell => {
-                cell.innerHTML = "";
-                cell.classList.remove("X");
-                cell.classList.remove("O");
-            });
-        };
-
-        cells.forEach(cell => cell.addEventListener('click', handleCellClick));
-        restartButton.addEventListener('click', handleRestartGame);
-        
-        // Music Player Logic
         const musicList = [
             { src: "senorita.mp3", title: "Senorita" },
             { src: "despacito.mp3", title: "Despacito" },
@@ -548,54 +283,77 @@
             { src: "maryoncross.mp3", title: "Mary On a Cross" }
         ];
 
+        let gameActive = true;
+        let currentPlayer = "X";
+        let gameState = Array(9).fill("");
         let currentSongIndex = 0;
-        const backgroundMusic = document.querySelector('#backgroundMusic');
-        const playButton = document.querySelector('#playMusic');
-        const pauseButton = document.querySelector('#pauseMusic');
-        const prevButton = document.querySelector('#prevMusic');
-        const nextButton = document.querySelector('#nextMusic');
-        const volumeControl = document.querySelector('#volumeControl');
-        const currentSongDisplay = document.querySelector('#currentSong');
 
-        const loadSong = (index) => {
-            backgroundMusic.src = musicList[index].src;
-            currentSongDisplay.textContent = `🎵 Now Playing: ${musicList[index].title}`;
-            backgroundMusic.load(); 
-        };
-        
-        const playCurrentSong = () => {
-            backgroundMusic.play().catch(e => console.error("Play error:", e));
+        const winConditions = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        const audio = document.getElementById('backgroundMusic');
+        const statusTxt = document.getElementById('status');
+        const cells = document.querySelectorAll('.cell');
+        const songDisplay = document.getElementById('currentSong');
+
+        function loadSong(index) {
+            audio.src = musicList[index].src;
+            songDisplay.textContent = `🎵 ${musicList[index].title}`;
+            audio.load();
         }
 
-        const nextSong = () => {
+        function checkWinner() {
+            let win = false;
+            for(let condition of winConditions) {
+                let [a,b,c] = condition;
+                if(gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+                    win = true; break;
+                }
+            }
+            if(win) {
+                statusTxt.innerHTML = `${currentPlayer} Win! 🏆`;
+                gameActive = false;
+                document.getElementById('vineBoomSound').play();
+                return;
+            }
+            if(!gameState.includes("")) {
+                statusTxt.innerHTML = "Draw! 🤝";
+                gameActive = false;
+                document.getElementById('fartSound').play();
+                return;
+            }
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            statusTxt.innerHTML = `${currentPlayer}'s Turn`;
+        }
+
+        cells.forEach(cell => {
+            cell.addEventListener('click', () => {
+                const idx = cell.dataset.index;
+                if(gameState[idx] || !gameActive) return;
+                gameState[idx] = currentPlayer;
+                cell.innerHTML = currentPlayer;
+                cell.classList.add(currentPlayer);
+                checkWinner();
+            });
+        });
+
+        document.getElementById('restart-button').addEventListener('click', () => {
+            gameActive = true; currentPlayer = "X"; gameState.fill("");
+            statusTxt.innerHTML = "X's Turn";
+            cells.forEach(c => { c.innerHTML = ""; c.classList.remove("X", "O"); });
+        });
+
+        document.getElementById('playMusic').addEventListener('click', () => audio.play());
+        document.getElementById('pauseMusic').addEventListener('click', () => audio.pause());
+        document.getElementById('nextMusic').addEventListener('click', () => {
             currentSongIndex = (currentSongIndex + 1) % musicList.length;
-            loadSong(currentSongIndex);
-            playCurrentSong();
-        };
-
-        const prevSong = () => {
+            loadSong(currentSongIndex); audio.play();
+        });
+        document.getElementById('prevMusic').addEventListener('click', () => {
             currentSongIndex = (currentSongIndex - 1 + musicList.length) % musicList.length;
-            loadSong(currentSongIndex);
-            playCurrentSong();
-        };
+            loadSong(currentSongIndex); audio.play();
+        });
+        document.getElementById('volumeControl').addEventListener('input', (e) => audio.volume = e.target.value);
 
-        // Initialize music player
         loadSong(currentSongIndex);
-        backgroundMusic.volume = volumeControl.value;
-
-        playButton.addEventListener('click', playCurrentSong);
-        pauseButton.addEventListener('click', () => {
-            backgroundMusic.pause();
-        });
-        prevButton.addEventListener('click', prevSong);
-        nextButton.addEventListener('click', nextSong);
-        
-        backgroundMusic.addEventListener('ended', nextSong);
-
-        volumeControl.addEventListener('input', (e) => {
-            backgroundMusic.volume = e.target.value;
-        });
-        
     </script>
 </body>
 </html>
